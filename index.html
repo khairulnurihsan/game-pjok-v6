@@ -1,0 +1,51 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Gerak Jawab IFP V6</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#10141b;color:#fff;font-family:Arial,sans-serif}
+#app{height:100%;display:flex;flex-direction:column}header{height:72px;display:flex;align-items:center;gap:12px;padding:8px 14px;background:#171d27;z-index:5}.brand{font-size:20px;font-weight:800;white-space:nowrap}.controls{display:flex;align-items:center;gap:8px;flex:1;justify-content:flex-end}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;background:#2b3442;color:#fff}#start{background:#159447}#check{background:#2463d4;min-width:150px}#next{background:#7c3aed}#timer{font-size:28px;font-weight:900;min-width:70px;text-align:center}
+#main{position:relative;flex:1;min-height:0;background:#000;overflow:hidden}#cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.shade{position:absolute;top:0;bottom:0;width:50%;pointer-events:none;opacity:0;transition:opacity .25s}.zoneA{left:0;background:#ef4444}.zoneB{right:0;background:#ef4444}
+#divider{position:absolute;top:0;bottom:0;left:50%;width:4px;transform:translateX(-50%);background:#fff;opacity:.85;z-index:2}
+.zone{position:absolute;top:12%;padding:14px 24px;border-radius:14px;background:#0008;font-size:42px;font-weight:900;text-shadow:0 3px 5px #000;z-index:3}.labelA{left:4%}.labelB{right:4%}
+#question{position:absolute;left:50%;top:4%;transform:translateX(-50%);width:min(86%,1100px);text-align:center;background:#000a;padding:12px 18px;border-radius:16px;font-size:25px;font-weight:800;z-index:4}
+.answer{position:absolute;bottom:7%;width:43%;padding:13px 18px;text-align:center;border-radius:15px;background:#0009;font-size:25px;font-weight:800;z-index:4}.answerA{left:3%}.answerB{right:3%}
+#status{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);padding:8px 18px;border-radius:12px;background:#000b;font-weight:800;z-index:5;white-space:nowrap}
+#result{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:6;pointer-events:none}#resultBox{padding:22px 34px;border-radius:20px;background:#000c;text-align:center;box-shadow:0 10px 35px #0008}#resultTitle{font-size:38px;font-weight:900}#resultText{font-size:24px;margin-top:8px}
+#editor{position:absolute;right:14px;top:82px;width:min(460px,92vw);max-height:72vh;overflow:auto;background:#161d27;border:1px solid #3b4655;border-radius:14px;padding:14px;display:none;z-index:20;box-shadow:0 12px 40px #0009}#editor textarea{width:100%;min-height:260px;background:#0d1219;color:#fff;border:1px solid #3a4554;border-radius:8px;padding:10px;font-family:monospace}
+@media(max-width:800px){header{height:auto;min-height:70px;flex-wrap:wrap}.controls{justify-content:flex-start;flex-wrap:wrap}.zone{font-size:26px}#question,.answer{font-size:18px}}
+</style></head><body><div id="app">
+<header><div class="brand">GERAK JAWAB IFP V6</div><div id="timer">10</div><div class="controls">
+<button id="start">▶ MULAI TIMER</button><button id="check">✓ VALIDASI</button><button id="next" disabled>SOAL BERIKUTNYA</button><button id="reset">RESET</button><button id="edit">EDIT SOAL</button></div></header>
+<div id="main"><video id="cam" autoplay playsinline muted></video><div id="shadeA" class="shade zoneA"></div><div id="shadeB" class="shade zoneB"></div><div id="divider"></div>
+<div id="question">Memuat soal...</div><div class="zone labelA">A</div><div class="zone labelB">B</div><div id="answerA" class="answer answerA"></div><div id="answerB" class="answer answerB"></div><div id="status">Kamera belum aktif</div>
+<div id="result"><div id="resultBox"><div id="resultTitle"></div><div id="resultText"></div></div></div></div>
+<div id="editor"><b>Edit Soal (JSON)</b><textarea id="json"></textarea><div style="font-size:12px;color:#b7c0cc">Format: {"q":"...","a":"...","b":"...","correct":"A"}</div><br><button id="save">SIMPAN</button> <button id="close">TUTUP</button></div>
+</div>
+<script>
+const defaults=[
+{q:"Dalam sepak bola, gerakan mengoper bola kepada teman disebut...",a:"Passing",b:"Shooting",correct:"A"},
+{q:"Dalam bola voli, servis bawah dilakukan dengan...",a:"Memukul bola dari bawah",b:"Menendang bola",correct:"A"},
+{q:"Start yang digunakan pada lari jarak pendek adalah...",a:"Start jongkok",b:"Start berdiri",correct:"A"},
+{q:"Tolakan pada lompat jauh dilakukan menggunakan...",a:"Satu kaki",b:"Dua kaki",correct:"A"},
+{q:"Zat gizi yang berfungsi membangun dan memperbaiki jaringan tubuh adalah...",a:"Protein",b:"Vitamin",correct:"A"},
+{q:"Dalam bola voli, satu regu maksimal memainkan bola sebanyak...",a:"3 kali",b:"5 kali",correct:"A"},
+{q:"Sebelum aktivitas olahraga, sebaiknya melakukan...",a:"Pemanasan",b:"Tidur",correct:"A"},
+{q:"Pada lari sprint, ayunan lengan membantu...",a:"Menjaga ritme dan dorongan",b:"Menghentikan langkah",correct:"A"},
+{q:"Pola makan seimbang sebaiknya mengandung...",a:"Beragam zat gizi",b:"Satu jenis makanan saja",correct:"A"},
+{q:"Setelah olahraga, kegiatan yang tepat adalah...",a:"Pendinginan",b:"Langsung berhenti",correct:"A"}];
+let questions=JSON.parse(localStorage.getItem("gjifp_v6_questions")||"null")||defaults,index=0,seconds=10,timer=null,validated=false;
+const $=id=>document.getElementById(id),cur=()=>questions[index];
+function render(){ $("question").textContent=cur().q;$("answerA").textContent="A. "+cur().a;$("answerB").textContent="B. "+cur().b;$("shadeA").style.opacity=0;$("shadeB").style.opacity=0;$("result").style.display="none";$("next").disabled=true;$("check").disabled=false;$("start").disabled=false;$("timer").textContent=seconds;$("status").textContent="Siap. Tekan MULAI TIMER.";validated=false}
+function stop(){if(timer){clearInterval(timer);timer=null}}
+function start(){if(validated)return;stop();seconds=10;$("timer").textContent=seconds;$("start").disabled=true;$("status").textContent="Waktu berjalan — pilih A atau B!";timer=setInterval(()=>{seconds--;$("timer").textContent=seconds;if(seconds<=0){stop();$("start").disabled=false;validate(true)}},1000)}
+function validate(auto){if(validated)return;stop();validated=true;$("start").disabled=false;$("check").disabled=true;let c=cur().correct;
+$("shadeA").style.background=c==="A"?"#22c55e":"#ef4444";$("shadeB").style.background=c==="B"?"#22c55e":"#ef4444";$("shadeA").style.opacity=.42;$("shadeB").style.opacity=.42;
+$("status").textContent="Jawaban benar HIJAU • jawaban salah MERAH";$("resultTitle").textContent="Jawaban yang benar: "+c;$("resultText").textContent=(c==="A"?"A. ":"B. ")+(c==="A"?cur().a:cur().b);$("result").style.display="flex";$("next").disabled=false}
+function next(){if(!validated)return;index=(index+1)%questions.length;seconds=10;render()}
+function reset(){stop();index=0;seconds=10;render()}
+async function camera(){try{if(!navigator.mediaDevices?.getUserMedia)throw Error("Browser tidak mendukung akses kamera.");let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:1280},height:{ideal:720}},audio:false});$("cam").srcObject=s;$("status").textContent="Kamera aktif. Tekan MULAI TIMER."}catch(e){$("status").textContent="Kamera gagal dibuka: "+e.message}}
+$("start").onclick=start;$("check").onclick=()=>validate(false);$("next").onclick=next;$("reset").onclick=reset;
+$("edit").onclick=()=>{$("json").value=JSON.stringify(questions,null,2);$("editor").style.display="block"};$("close").onclick=()=>{$("editor").style.display="none"};
+$("save").onclick=()=>{try{let a=JSON.parse($("json").value);if(!Array.isArray(a)||!a.length)throw Error("Soal kosong.");a.forEach(x=>{if(!x.q||!x.a||!x.b||!["A","B"].includes(x.correct))throw Error("Format soal salah.")});questions=a;localStorage.setItem("gjifp_v6_questions",JSON.stringify(a));index=0;seconds=10;render();$("editor").style.display="none"}catch(e){alert(e.message)}};
+render();camera();
+</script></body></html>
