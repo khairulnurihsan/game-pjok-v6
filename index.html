@@ -23,16 +23,15 @@ button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:poin
 </div>
 <script>
 const defaults=[
-{q:"Dalam sepak bola, gerakan mengoper bola kepada teman disebut...",a:"Passing",b:"Shooting",correct:"A"},
-{q:"Dalam bola voli, servis bawah dilakukan dengan...",a:"Memukul bola dari bawah",b:"Menendang bola",correct:"A"},
-{q:"Start yang digunakan pada lari jarak pendek adalah...",a:"Start jongkok",b:"Start berdiri",correct:"A"},
-{q:"Tolakan pada lompat jauh dilakukan menggunakan...",a:"Satu kaki",b:"Dua kaki",correct:"A"},
-{q:"Zat gizi yang berfungsi membangun dan memperbaiki jaringan tubuh adalah...",a:"Protein",b:"Vitamin",correct:"A"},
-{q:"Dalam bola voli, satu regu maksimal memainkan bola sebanyak...",a:"3 kali",b:"5 kali",correct:"A"},
-{q:"Sebelum aktivitas olahraga, sebaiknya melakukan...",a:"Pemanasan",b:"Tidur",correct:"A"},
-{q:"Pada lari sprint, ayunan lengan membantu...",a:"Menjaga ritme dan dorongan",b:"Menghentikan langkah",correct:"A"},
-{q:"Pola makan seimbang sebaiknya mengandung...",a:"Beragam zat gizi",b:"Satu jenis makanan saja",correct:"A"},
-{q:"Setelah olahraga, kegiatan yang tepat adalah...",a:"Pendinginan",b:"Langsung berhenti",correct:"A"}];
+{q:"Bola Voli berasal dari ...",a:"Inggris",b:"Amerika Serikat",correct:"B"},
+{q:"Jumlah pemain inti dalam satu regu bola voli di lapangan adalah ...",a:"6 pemain",b:"8 pemain",correct:"A"},
+{q:"Lebar Lapangan Bola Voli ...",a:"6 Meter",b:"9 Meter",correct:"B"},
+{q:"Panjang Lapangan Bola Voli",a:"18 Meter",b:"19 Meter",correct:"A"},
+{q:"Teknik mengumpan membendung serangan bola Voli adalah ...",a:"Block",b:"Smash",correct:"A"},
+{q:"Dalam bola voli, servis dilakukan dari ...",a:"Belakang garis akhir",b:"Tengah lapangan",correct:"A"},
+{q:"Jumlah sentuhan maksimal bola voli ...",a:"4 Kali",b:"3 Kali",correct:"B"},
+{q:"Spike istilah lain dari teknik ...",a:"Smash",b:"Service",correct:"A"}
+];
 let questions=JSON.parse(localStorage.getItem("gjifp_v6_questions")||"null")||defaults,index=0,seconds=10,timer=null,validated=false;
 const $=id=>document.getElementById(id),cur=()=>questions[index];
 function render(){ $("question").textContent=cur().q;$("answerA").textContent="A. "+cur().a;$("answerB").textContent="B. "+cur().b;$("shadeA").style.opacity=0;$("shadeB").style.opacity=0;$("result").style.display="none";$("next").disabled=true;$("check").disabled=false;$("start").disabled=false;$("timer").textContent=seconds;$("status").textContent="Siap. Tekan MULAI TIMER.";validated=false}
